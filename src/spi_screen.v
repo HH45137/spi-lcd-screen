@@ -142,8 +142,11 @@ assign lcd_data   = spi_data[7]; // MSB
 
 // 生成图像数据
 reg [15:0] pixel;
-reg [15:0] coord_x;			// 横向的屏幕坐标
-reg [15:0] coord_y;			// 竖向的屏幕坐标
+reg [7:0] coord_x;			// 横向的屏幕坐标
+reg [7:0] coord_y;			// 竖向的屏幕坐标
+reg [4:0] r;
+reg [5:0] g;
+reg [4:0] b;
 
 always@(posedge clk or negedge resetn) begin
 	if (~resetn) begin
@@ -248,7 +251,10 @@ always@(posedge clk or negedge resetn) begin
 					end else begin
 						coord_x <= coord_x + 1;  // 同行内x坐标递增
 					end
-					pixel <= coord_x + coord_y;
+					r = coord_x[7:3];
+					g = coord_y[7:2];
+					b = 5'h0;
+					pixel <= { r, g, b };
 
 					if (bit_loop == 0) begin
 						// start
