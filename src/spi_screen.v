@@ -113,6 +113,9 @@ localparam CNT_200MS = 32'd54;
 
 `endif
 
+localparam SCREEN_WIDTH = 240;
+localparam SCREEN_HEIGHT = 135;
+localparam SCREEN_PIXEL_TOTAL = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 reg [ 3:0] init_state;
 reg [ 6:0] cmd_index;
@@ -133,9 +136,14 @@ assign lcd_cs     = lcd_cs_r;
 assign lcd_rs     = lcd_rs_r;
 assign lcd_data   = spi_data[7]; // MSB
 
-// gen color bar
-wire [15:0] pixel = (pixel_cnt >= 21600) ? 16'hF800 :
-					(pixel_cnt >= 10800) ? 16'h07E0 : 16'h001F;
+// // gen color bar
+// wire [15:0] pixel = (pixel_cnt >= 21600) ? 16'hF800 :
+// 					(pixel_cnt >= 10800) ? 16'h07E0 : 16'h001F;
+
+// 生成图像数据
+reg [15:0] pixel;
+reg [15:0] coord_x;			// 横向的屏幕坐标
+reg [15:0] coord_y;			// 竖向的屏幕坐标
 
 always@(posedge clk or negedge resetn) begin
 	if (~resetn) begin
@@ -150,6 +158,8 @@ always@(posedge clk or negedge resetn) begin
 		bit_loop <= 0;
 
 		pixel_cnt <= 0;
+		coord_x <= 0;
+		coord_y <= 0;
 	end else begin
 
 		case (init_state)
@@ -230,6 +240,16 @@ always@(posedge clk or negedge resetn) begin
 				if (pixel_cnt == 32400) begin
 					; // stop
 				end else begin
+
+					// 每个像素的值都根据当前pixel的屏幕坐标生成
+					if (pixel_cnt % SCREEN_WIDTH == 0) begin
+						coord_y <= coord_y + 1;
+						coord_x <= 0;  // 新行的第一个像素，x坐标为0
+					end else begin
+						coord_x <= coord_x + 1;  // 同行内x坐标递增
+					end
+					pixel <= coord_x + coord_y;
+
 					if (bit_loop == 0) begin
 						// start
 						lcd_cs_r <= 0;
