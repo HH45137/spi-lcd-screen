@@ -8,9 +8,6 @@ module spi_screen(
 	input clk, // 27M
 	input resetn,
 
-	output ser_tx,
-	input ser_rx,
-
 	output lcd_resetn,
 	output lcd_clk,
 	output lcd_cs,
@@ -237,12 +234,12 @@ always@(posedge clk or negedge resetn) begin
 						// start
 						lcd_cs_r <= 0;
 						lcd_rs_r <= 1;
-//						spi_data <= 8'hF8; // RED
+						// spi_data <= 8'hF8; // RED
 						spi_data <= pixel[15:8];
 						bit_loop <= bit_loop + 1;
 					end else if (bit_loop == 8) begin
 						// next byte
-//						spi_data <= 8'h00; // RED
+						// spi_data <= 8'h00; // RED
 						spi_data <= pixel[7:0];
 						bit_loop <= bit_loop + 1;
 					end else if (bit_loop == 16) begin

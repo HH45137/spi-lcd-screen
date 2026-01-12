@@ -4,15 +4,12 @@ module tb_spi_screen ();
 /* ----------------  连到 DUT 的信号  ---------------- */
 reg  clk;
 reg  resetn;
-wire ser_tx, ser_rx;
 wire lcd_resetn, lcd_clk, lcd_cs, lcd_rs, lcd_data;
 
 /* ----------------  实例化被测模块  ---------------- */
 spi_screen dut (
     .clk        (clk),
     .resetn     (resetn),
-    .ser_tx     (ser_tx),
-    .ser_rx     (ser_rx),
     .lcd_resetn (lcd_resetn),
     .lcd_clk    (lcd_clk),
     .lcd_cs     (lcd_cs),
